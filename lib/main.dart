@@ -24,9 +24,6 @@ void main() {
 class MainScreen extends StatelessWidget {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
-  final UpdatedTime = 1200;
-  final CurrentArea = "北九州市小倉南区曽根";
-  final DangerLevel = "4";
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +37,7 @@ class MainScreen extends StatelessWidget {
         children: [
 
           Center(child: FlatButton(
-            child: Text('Area Name: $CurrentArea',style: TextStyle(fontSize: 20),),
+            child: Text('Area Name: 若松区',style: TextStyle(fontSize: 20),),
             onPressed: () {
               // Navigate to the Setting screen using a named route.
               Navigator.pushNamed(context, '/area');
@@ -49,7 +46,7 @@ class MainScreen extends StatelessWidget {
           ),
           
           Center(child: FlatButton(
-            child: Text('Updated Time: $UpdatedTime 現在',style: TextStyle(fontSize: 25),),
+            child: Text('Updated Time: 12:00 現在',style: TextStyle(fontSize: 25),),
             onPressed: () {
               // Navigate to the Setting screen using a named route.
               //Navigator.pushNamed(context, '/area');
@@ -67,7 +64,7 @@ class MainScreen extends StatelessWidget {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Image.asset('images/necchusyou_shitsunai.png', scale: 3.8,),
-                Text('危険度を表示: $DangerLevel',style: TextStyle(fontSize: 20),),
+                Text('危険度を表示: 4',style: TextStyle(fontSize: 20),),
               ],
             )
           ),
@@ -168,30 +165,6 @@ class AreaScreen extends StatelessWidget {
           ),
         ],
         physics: NeverScrollableScrollPhysics(),
-      ),
-    );
-  }
-}
-
-
-class MyHomePage extends StatefulWidget {
-
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Material App"),
-      ),
-      body: new Center(
-        child: new Text(
-              'Hello World',
-            ),
       ),
     );
   }
