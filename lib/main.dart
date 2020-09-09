@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:heatstroke_report_app/weather_format.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 void main() {
   runApp(MaterialApp(
@@ -36,39 +39,7 @@ class MainScreen extends StatelessWidget {
       body: Column(
         children: [
 
-          Center(child: FlatButton(
-            child: Text('Area Name: 若松区',style: TextStyle(fontSize: 20),),
-            onPressed: () {
-              // Navigate to the Setting screen using a named route.
-              Navigator.pushNamed(context, '/area');
-            },
-          )
-          ),
-          
-          Center(child: FlatButton(
-            child: Text('Updated Time: 12:00 現在',style: TextStyle(fontSize: 25),),
-            onPressed: () {
-              // Navigate to the Setting screen using a named route.
-              //Navigator.pushNamed(context, '/area');
-            },
-          )
-          ),
-
-
-          Container(
-            padding: const EdgeInsets.all(20),
-            //alignment: Alignment.bottomCenter,
-            color: Colors.orange[50],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Image.asset('images/necchusyou_shitsunai.png', scale: 3.8,),
-                Text('危険度を表示: 4',style: TextStyle(fontSize: 20),),
-              ],
-            )
-          ),
-
+          HeatstrokeInfo(),
 
           Container(
             padding: const EdgeInsets.all(20),
@@ -102,6 +73,55 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
+
+
+class HeatstrokeInfo extends StatefulWidget {
+  @override
+  _HeatstrokeInfoState createState() => _HeatstrokeInfoState();
+}
+
+class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Center(child: FlatButton(
+            child: Text('Area Name: 若松区',style: TextStyle(fontSize: 20),),
+            onPressed: () {
+              // Navigate to the Setting screen using a named route.
+              Navigator.pushNamed(context, '/area');
+            },
+          )
+          ),
+          
+          Center(child: FlatButton(
+            child: Text('Updated Time: 12:00 現在',style: TextStyle(fontSize: 25),),
+            onPressed: () {
+            },
+          )
+          ),
+
+
+          Container(
+            padding: const EdgeInsets.all(20),
+            //alignment: Alignment.bottomCenter,
+            color: Colors.orange[50],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Image.asset('images/necchusyou_shitsunai.png', scale: 3.8,),
+                Text('危険度を表示: 4',style: TextStyle(fontSize: 20),),
+              ],
+            )
+          ),
+        ],
+      ),      
+    );
+  }
+}
+
 
 class SettingScreen extends StatelessWidget {
   static const TextStyle optionStyle =
