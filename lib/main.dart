@@ -92,7 +92,6 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     super.initState();
 
     loadWeather();
-    //wbgt = outdoorWbgt();
   }
 
   @override
@@ -110,9 +109,10 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           ),
           
           Center(child: FlatButton(
-            child: Text('${new DateFormat.jm().format(weatherFormat.date)} 現在',style: TextStyle(fontSize: 40),),
-            onPressed: () {
-            },
+            child: Text('${new DateFormat.jm().format(weatherFormat.date)} 現在　🔄',style: TextStyle(fontSize: 40),),
+            onPressed: (){
+              loadWeather();
+            }
           )
           ),
 
