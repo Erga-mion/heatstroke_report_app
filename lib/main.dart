@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:heatstroke_report_app/weather_format.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:intl/intl.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -24,9 +28,6 @@ void main() {
 class MainScreen extends StatelessWidget {
   static const TextStyle optionStyle =
       TextStyle(fontSize: 30, fontWeight: FontWeight.bold, color: Colors.white);
-  final UpdatedTime = 1200;
-  final CurrentArea = "北九州市小倉南区曽根";
-  final DangerLevel = "4";
 
   @override
   Widget build(BuildContext context) {
@@ -37,52 +38,21 @@ class MainScreen extends StatelessWidget {
       ),
 
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
 
-          Center(child: FlatButton(
-            child: Text('Area Name: $CurrentArea',style: TextStyle(fontSize: 20),),
-            onPressed: () {
-              // Navigate to the Setting screen using a named route.
-              Navigator.pushNamed(context, '/area');
-            },
-          )
-          ),
-          
-          Center(child: FlatButton(
-            child: Text('Updated Time: $UpdatedTime 現在',style: TextStyle(fontSize: 25),),
-            onPressed: () {
-              // Navigate to the Setting screen using a named route.
-              //Navigator.pushNamed(context, '/area');
-            },
-          )
-          ),
-
+          HeatstrokeInfo(),
 
           Container(
-            padding: const EdgeInsets.all(20),
+            padding: const EdgeInsets.all(8),
             //alignment: Alignment.bottomCenter,
-            color: Colors.orange[50],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Image.asset('images/necchusyou_shitsunai.png', scale: 3.8,),
-                Text('危険度を表示: $DangerLevel',style: TextStyle(fontSize: 20),),
-              ],
-            )
-          ),
-
-
-          Container(
-            padding: const EdgeInsets.all(20),
-            //alignment: Alignment.bottomCenter,
-            color: Colors.orange[50],
+            //color: Colors.orange[50],
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 RaisedButton(
-                  child: Text('詳細データ',style: TextStyle(fontSize: 20),),
+                  child: Text('詳細データ',style: TextStyle(fontSize: 30),),
                   onPressed: () {
                     // Navigate to the Setting screen using a named route.
                     //Navigator.pushNamed(context, '/Setting');
@@ -90,7 +60,7 @@ class MainScreen extends StatelessWidget {
                 ),
 
                 RaisedButton(
-                  child: Text('設定',style: TextStyle(fontSize: 20),),
+                  child: Text('設定',style: TextStyle(fontSize: 30),),
                   onPressed: () {
                     // Navigate to the Setting screen using a named route.
                     Navigator.pushNamed(context, '/setting');
@@ -105,6 +75,102 @@ class MainScreen extends StatelessWidget {
     );
   }
 }
+
+
+class HeatstrokeInfo extends StatefulWidget {
+  @override
+  _HeatstrokeInfoState createState() => _HeatstrokeInfoState();
+}
+
+class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
+  bool isLoading = false;
+  WeatherFormat weatherFormat;
+  double wbgt;
+
+  @override
+  void initState(){
+    super.initState();
+
+    loadWeather();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      child: Column(
+        children: [
+          Center(child: FlatButton(
+            child: Text('若松区',style: TextStyle(fontSize: 35),),
+            onPressed: () {
+              // Navigate to the Setting screen using a named route.
+              Navigator.pushNamed(context, '/area');
+            },
+          )
+          ),
+          
+          Center(child: FlatButton(
+            child: Text('${new DateFormat.jm().format(weatherFormat.date)} 現在　🔄',style: TextStyle(fontSize: 40),),
+            onPressed: (){
+              loadWeather();
+            }
+          )
+          ),
+
+
+          Container(
+            padding: const EdgeInsets.all(20),
+            //alignment: Alignment.bottomCenter,
+            //color: Colors.orange[50],
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Image.asset('images/necchusyou_shitsunai.png', fit: BoxFit.contain),
+                Text('危険度${outdoorWbgt()}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
+                Text('温度 ${weatherFormat.temp.toString()}℃, 湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 30),),
+              ],
+            )
+          ),
+        ],
+      ),      
+    );
+  }
+
+  loadWeather() async{
+    setState(() {
+      isLoading = true;
+    });
+
+    final lat = 33.8914151;
+    final lon = 130.707071;
+    final weatherResponse = await http.get(
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
+    );
+
+    if(weatherResponse.statusCode == 200){
+      return setState(() {
+        weatherFormat = new WeatherFormat.fromJson(jsonDecode(weatherResponse.body));
+        isLoading = false;
+      });
+    }
+
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  outdoorWbgt(){
+    wbgt = 0.735 * weatherFormat.temp + 0.0374 * weatherFormat.humidity + 0.00292 * weatherFormat.temp * weatherFormat.humidity - 4.064;
+    if(wbgt>=31){return '5 運動は原則中止';}
+    else if(wbgt >= 28 && wbgt < 31){return '4 厳重警戒\n（激しい運動は中止）';}
+    else if(wbgt >= 25 && wbgt < 28){return '3 警戒\n（積極的に休憩）';}
+    else if(wbgt >= 21 && wbgt < 25){return '2 注意\n（積極的に水分補給）';}
+    else if(wbgt < 21){return '1 ほぼ安全\n（適宜水分補給）';}
+    //return wbgt;
+  }
+
+}
+
 
 class SettingScreen extends StatelessWidget {
   static const TextStyle optionStyle =
@@ -168,30 +234,6 @@ class AreaScreen extends StatelessWidget {
           ),
         ],
         physics: NeverScrollableScrollPhysics(),
-      ),
-    );
-  }
-}
-
-
-class MyHomePage extends StatefulWidget {
-
-  @override
-  _MyHomePageState createState() => new _MyHomePageState();
-}
-
-class _MyHomePageState extends State<MyHomePage> {
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text("Material App"),
-      ),
-      body: new Center(
-        child: new Text(
-              'Hello World',
-            ),
       ),
     );
   }
