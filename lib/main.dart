@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:heatstroke_report_app/weather_format.dart';
+import 'package:heatstroke_report_app/alert_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
@@ -85,6 +86,7 @@ class HeatstrokeInfo extends StatefulWidget {
 class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   bool isLoading = false;
   WeatherFormat weatherFormat;
+  AlertFormat alertFormat;
   double wbgt;
 
   @override
@@ -125,8 +127,8 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Image.asset('images/necchusyou_shitsunai.png', fit: BoxFit.contain),
-                Text('危険度${outdoorWbgt()}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
+                Image.asset('images/${alertFormat.image}', fit: BoxFit.contain),
+                Text('危険度${alertFormat.comment}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
                 Text('温度 ${weatherFormat.temp.toString()}℃, 湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 30),),
               ],
             )
@@ -144,12 +146,13 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     final lat = 33.8914151;
     final lon = 130.707071;
     final weatherResponse = await http.get(
-      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=1df4e4b64efb6662d156035cff997ad4'
     );
 
     if(weatherResponse.statusCode == 200){
       return setState(() {
         weatherFormat = new WeatherFormat.fromJson(jsonDecode(weatherResponse.body));
+        outdoorWbgt();
         isLoading = false;
       });
     }
@@ -161,11 +164,16 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
 
   outdoorWbgt(){
     wbgt = 0.735 * weatherFormat.temp + 0.0374 * weatherFormat.humidity + 0.00292 * weatherFormat.temp * weatherFormat.humidity - 4.064;
-    if(wbgt>=31){return '5 運動は原則中止';}
+    /*if(wbgt>=31){return '5 運動は原則中止';}
     else if(wbgt >= 28 && wbgt < 31){return '4 厳重警戒\n（激しい運動は中止）';}
     else if(wbgt >= 25 && wbgt < 28){return '3 警戒\n（積極的に休憩）';}
     else if(wbgt >= 21 && wbgt < 25){return '2 注意\n（積極的に水分補給）';}
-    else if(wbgt < 21){return '1 ほぼ安全\n（適宜水分補給）';}
+    else if(wbgt < 21){return '1 ほぼ安全\n（適宜水分補給）';}*/
+    if(wbgt>=31){alertFormat = new AlertFormat(5);}
+    else if(wbgt >= 28 && wbgt < 31){alertFormat = new AlertFormat(4);}
+    else if(wbgt >= 25 && wbgt < 28){alertFormat = new AlertFormat(3);}
+    else if(wbgt >= 21 && wbgt < 25){alertFormat = new AlertFormat(2);}
+    else if(wbgt < 21){alertFormat = new AlertFormat(1);}
     //return wbgt;
   }
 

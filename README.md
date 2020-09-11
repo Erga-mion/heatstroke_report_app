@@ -1,6 +1,8 @@
 # heatstroke_report_app
 
-A new Flutter project.
+Flutter Heatstroke report app project.
+
+使用には,147行目のリンクの`APPID=`の先に,OpenWeatherMapのAPI Key(要登録)が必要です.
 
 ## Getting Started
 
