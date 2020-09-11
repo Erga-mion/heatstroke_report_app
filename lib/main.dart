@@ -44,33 +44,6 @@ class MainScreen extends StatelessWidget {
 
           HeatstrokeInfo(),
 
-          Container(
-            padding: const EdgeInsets.all(8),
-            //alignment: Alignment.bottomCenter,
-            //color: Colors.orange[50],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                RaisedButton(
-                  child: Text('詳細データ',style: TextStyle(fontSize: 30),),
-                  onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    //Navigator.pushNamed(context, '/Setting');
-                  },
-                ),
-
-                RaisedButton(
-                  child: Text('設定',style: TextStyle(fontSize: 30),),
-                  onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    Navigator.pushNamed(context, '/setting');
-                  },
-                ),
-              ],
-            )
-          ),
-
         ],
       ),
     );
@@ -102,7 +75,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
       child: Column(
         children: [
           Center(child: FlatButton(
-            child: Text('若松区',style: TextStyle(fontSize: 35),),
+            child: Text('若松区',style: TextStyle(fontSize: 40),),
             onPressed: () {
               // Navigate to the Setting screen using a named route.
               Navigator.pushNamed(context, '/area');
@@ -111,7 +84,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           ),
           
           Center(child: FlatButton(
-            child: Text('${new DateFormat.jm().format(weatherFormat.date)} 現在　🔄',style: TextStyle(fontSize: 40),),
+            child: Text('${new DateFormat.Hm().format(weatherFormat.date)} 更新　🔄',style: TextStyle(fontSize: 40),),
             onPressed: (){
               loadWeather();
             }
@@ -128,11 +101,38 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Image.asset('images/${alertFormat.image}', fit: BoxFit.contain),
-                Text('危険度${alertFormat.comment}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 35),),
-                Text('温度 ${weatherFormat.temp.toString()}℃, 湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 30),),
+                Text('危険度${alertFormat.comment}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 40),),
+                Text('温度 ${weatherFormat.temp.toString()}℃ \n湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 40),),
               ],
             )
           ),
+        
+          Container(
+            padding: const EdgeInsets.all(8),
+            //alignment: Alignment.bottomCenter,
+            //color: Colors.orange[50],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RaisedButton(
+                  child: Text('🔄 更新',style: TextStyle(fontSize: 40),),
+                  onPressed: () {
+                    loadWeather();
+                  },
+                ),
+
+                RaisedButton(
+                  child: Text('地域設定',style: TextStyle(fontSize: 40),),
+                  onPressed: () {
+                    // Navigate to the Setting screen using a named route.
+                    Navigator.pushNamed(context, '/area');
+                  },
+                ),
+              ],
+            )
+          ),
+        
         ],
       ),      
     );
