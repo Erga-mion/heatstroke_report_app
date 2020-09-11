@@ -146,7 +146,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     final lat = 33.8914151;
     final lon = 130.707071;
     final weatherResponse = await http.get(
-      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=1df4e4b64efb6662d156035cff997ad4'
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
     );
 
     if(weatherResponse.statusCode == 200){
@@ -164,17 +164,11 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
 
   outdoorWbgt(){
     wbgt = 0.735 * weatherFormat.temp + 0.0374 * weatherFormat.humidity + 0.00292 * weatherFormat.temp * weatherFormat.humidity - 4.064;
-    /*if(wbgt>=31){return '5 運動は原則中止';}
-    else if(wbgt >= 28 && wbgt < 31){return '4 厳重警戒\n（激しい運動は中止）';}
-    else if(wbgt >= 25 && wbgt < 28){return '3 警戒\n（積極的に休憩）';}
-    else if(wbgt >= 21 && wbgt < 25){return '2 注意\n（積極的に水分補給）';}
-    else if(wbgt < 21){return '1 ほぼ安全\n（適宜水分補給）';}*/
     if(wbgt>=31){alertFormat = new AlertFormat(5);}
     else if(wbgt >= 28 && wbgt < 31){alertFormat = new AlertFormat(4);}
     else if(wbgt >= 25 && wbgt < 28){alertFormat = new AlertFormat(3);}
     else if(wbgt >= 21 && wbgt < 25){alertFormat = new AlertFormat(2);}
     else if(wbgt < 21){alertFormat = new AlertFormat(1);}
-    //return wbgt;
   }
 
 }
