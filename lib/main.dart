@@ -44,6 +44,32 @@ class MainScreen extends StatelessWidget {
 
           HeatstrokeInfo(),
 
+          /*Container(
+            padding: const EdgeInsets.all(8),
+            //alignment: Alignment.bottomCenter,
+            //color: Colors.orange[50],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RaisedButton(
+                  child: Text('🔄 更新',style: TextStyle(fontSize: 40),),
+                  onPressed: () {
+                    loadWeather();
+                  },
+                ),
+
+                RaisedButton(
+                  child: Text('地域設定',style: TextStyle(fontSize: 40),),
+                  onPressed: () {
+                    // Navigate to the Setting screen using a named route.
+                    Navigator.pushNamed(context, '/area');
+                  },
+                ),
+              ],
+            )
+          ),*/
+
         ],
       ),
     );
@@ -215,23 +241,23 @@ class AreaScreen extends StatelessWidget {
       body: ListView(
         children: <Widget>[
           ListTile(
-            leading: Icon(Icons.gps_fixed, size: 36.0,),
-            title: Text('GPSで現在地を探す', style: TextStyle(fontSize: 30),),
+            leading: Icon(Icons.gps_fixed, size: 40.0,),
+            title: Text('GPSで現在地を探す', style: TextStyle(fontSize: 40),),
             onTap: (){},
           ),
           ListTile(
-            leading: Icon(Icons.not_listed_location, size: 36.0,),
-            title: Text('地域を探す', style: TextStyle(fontSize: 30),),
+            leading: Icon(Icons.not_listed_location, size: 40.0,),
+            title: Text('地域を探す', style: TextStyle(fontSize: 40),),
             onTap: (){},
           ),
           ListTile(
-            leading: Icon(Icons.person_pin_circle, size: 36.0,),
-            title: Text('プリセットから選ぶ', style: TextStyle(fontSize: 30),),
+            leading: Icon(Icons.person_pin_circle, size: 40.0,),
+            title: Text('プリセットから選ぶ', style: TextStyle(fontSize: 40),),
             onTap: (){},
           ),
           ListTile(
-            leading: Icon(Icons.edit_location, size: 36.0,),
-            title: Text('プリセットを編集する', style: TextStyle(fontSize: 30),),
+            leading: Icon(Icons.edit_location, size: 40.0,),
+            title: Text('プリセットを編集する', style: TextStyle(fontSize: 40),),
             onTap: (){},
           ),
         ],
