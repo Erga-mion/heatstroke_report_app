@@ -106,7 +106,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               children: [
                 Image.asset('images/${alertFormat.image}', fit: BoxFit.contain),
                 Text('${alertFormat.comment}',textAlign: TextAlign.left,style: TextStyle(fontSize: 35),),
-                //Text('温度 ${weatherFormat.temp.toString()}℃ \n湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 40),),
+                Text('温度 ${weatherFormat.temp.toString()}℃ 湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 30),),
               ],
             )
           ),
@@ -121,36 +121,25 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               children: [
                 RaisedButton(
                   child: Text('1',style: TextStyle(fontSize: 60, color: Colors.white),),
-                  color: Colors.orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),                  
+                  color: Colors.orange,                 
                   onPressed: () {
-                    //loadWeather();
+                    
                   },
                 ),
 
                 RaisedButton(
                   child: Text('2',style: TextStyle(fontSize: 60, color: Colors.white),),
-                  color: Colors.orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),                  
+                  color: Colors.orange,                 
                   onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    //Navigator.pushNamed(context, '/area');
+                    
                   },
                 ),
 
                 RaisedButton(
                   child: Text('3',style: TextStyle(fontSize: 60, color: Colors.white),),
-                  color: Colors.orange,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),                  
+                  color: Colors.orange,                
                   onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    //Navigator.pushNamed(context, '/area');
+                    
                   },
                 ),
 
@@ -159,7 +148,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           ),
 
           Container(
-            padding: const EdgeInsets.all(5),
+            padding: const EdgeInsets.all(20),
             //alignment: Alignment.bottomCenter,
             //color: Colors.orange[50],
             child: Row(
@@ -167,7 +156,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 RaisedButton(
-                  child: Text('🔄 更新',style: TextStyle(fontSize: 50, color: Colors.white),),
+                  child: Text('更新',style: TextStyle(fontSize: 50, color: Colors.white),),
                   color: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -205,7 +194,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     final lat = 33.8914151;
     final lon = 130.707071;
     final weatherResponse = await http.get(
-      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=d4d6b271cf6e6d4ae4a18f4e7c375266'
     );
 
     if(weatherResponse.statusCode == 200){
