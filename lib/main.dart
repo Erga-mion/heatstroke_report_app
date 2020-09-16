@@ -44,32 +44,6 @@ class MainScreen extends StatelessWidget {
 
           HeatstrokeInfo(),
 
-          /*Container(
-            padding: const EdgeInsets.all(8),
-            //alignment: Alignment.bottomCenter,
-            //color: Colors.orange[50],
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                RaisedButton(
-                  child: Text('🔄 更新',style: TextStyle(fontSize: 40),),
-                  onPressed: () {
-                    loadWeather();
-                  },
-                ),
-
-                RaisedButton(
-                  child: Text('地域設定',style: TextStyle(fontSize: 40),),
-                  onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    Navigator.pushNamed(context, '/area');
-                  },
-                ),
-              ],
-            )
-          ),*/
-
         ],
       ),
     );
@@ -100,21 +74,25 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     return Container(
       child: Column(
         children: [
-          Center(child: FlatButton(
-            child: Text('若松区',style: TextStyle(fontSize: 40),),
+          Align(
+            alignment: Alignment.topLeft,
+            child: FlatButton(
+            child: Text('若松区の熱中症危険度',style: TextStyle(fontSize: 35),),
             onPressed: () {
               // Navigate to the Setting screen using a named route.
               Navigator.pushNamed(context, '/area');
             },
-          )
+            )
           ),
           
-          Center(child: FlatButton(
-            child: Text('${new DateFormat.Hm().format(weatherFormat.date)} 更新　🔄',style: TextStyle(fontSize: 40),),
+          Align(
+            alignment: Alignment.topLeft,
+            child: FlatButton(
+            child: Text('${new DateFormat.Hm().format(weatherFormat.date)}    現在',style: TextStyle(fontSize: 40),),
             onPressed: (){
               loadWeather();
             }
-          )
+            )
           ),
 
 
@@ -127,8 +105,8 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Image.asset('images/${alertFormat.image}', fit: BoxFit.contain),
-                Text('危険度${alertFormat.comment}\n',textAlign: TextAlign.center,style: TextStyle(fontSize: 40),),
-                Text('温度 ${weatherFormat.temp.toString()}℃ \n湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 40),),
+                Text('${alertFormat.comment}',textAlign: TextAlign.left,style: TextStyle(fontSize: 35),),
+                //Text('温度 ${weatherFormat.temp.toString()}℃ \n湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 40),),
               ],
             )
           ),
@@ -142,14 +120,69 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 RaisedButton(
-                  child: Text('🔄 更新',style: TextStyle(fontSize: 40),),
+                  child: Text('1',style: TextStyle(fontSize: 60, color: Colors.white),),
+                  color: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),                  
+                  onPressed: () {
+                    //loadWeather();
+                  },
+                ),
+
+                RaisedButton(
+                  child: Text('2',style: TextStyle(fontSize: 60, color: Colors.white),),
+                  color: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),                  
+                  onPressed: () {
+                    // Navigate to the Setting screen using a named route.
+                    //Navigator.pushNamed(context, '/area');
+                  },
+                ),
+
+                RaisedButton(
+                  child: Text('3',style: TextStyle(fontSize: 60, color: Colors.white),),
+                  color: Colors.orange,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),                  
+                  onPressed: () {
+                    // Navigate to the Setting screen using a named route.
+                    //Navigator.pushNamed(context, '/area');
+                  },
+                ),
+
+              ],
+            )
+          ),
+
+          Container(
+            padding: const EdgeInsets.all(5),
+            //alignment: Alignment.bottomCenter,
+            //color: Colors.orange[50],
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              //crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                RaisedButton(
+                  child: Text('🔄 更新',style: TextStyle(fontSize: 50, color: Colors.white),),
+                  color: Colors.red,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),                  
                   onPressed: () {
                     loadWeather();
                   },
                 ),
 
                 RaisedButton(
-                  child: Text('地域設定',style: TextStyle(fontSize: 40),),
+                  child: Text('現在地',style: TextStyle(fontSize: 50, color: Colors.white),),
+                  color: Colors.green,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10.0),
+                  ),                  
                   onPressed: () {
                     // Navigate to the Setting screen using a named route.
                     Navigator.pushNamed(context, '/area');
