@@ -4,6 +4,7 @@ import 'package:heatstroke_report_app/alert_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
+import 'package:geolocator/geolocator.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -60,11 +61,13 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   bool isLoading = false;
   WeatherFormat weatherFormat;
   AlertFormat alertFormat;
+  Position userLocation;
   double wbgt;
 
   @override
   void initState(){
     super.initState();
+    getLocation();
 
     loadWeather();
   }
@@ -173,8 +176,9 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
                     borderRadius: BorderRadius.circular(10.0),
                   ),                  
                   onPressed: () {
-                    // Navigate to the Setting screen using a named route.
-                    Navigator.pushNamed(context, '/area');
+                    setState(() {
+                      getLocation();
+                    });                    
                   },
                 ),
               ],
@@ -193,8 +197,10 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
 
     final lat = 33.8914151;
     final lon = 130.707071;
+    //final lat = userLocation.latitude;
+    //final lon = userLocation.longitude;
     final weatherResponse = await http.get(
-      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=d4d6b271cf6e6d4ae4a18f4e7c375266'
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
     );
 
     if(weatherResponse.statusCode == 200){
@@ -219,6 +225,17 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     else if(wbgt < 21){alertFormat = new AlertFormat(1);}
   }
 
+  Future<void> getLocation() async {
+    Position currentLocation;
+    try {
+      currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    }
+    catch(e){
+      currentLocation = null;
+    }
+    userLocation = currentLocation;
+    print(userLocation);
+  }
 }
 
 
