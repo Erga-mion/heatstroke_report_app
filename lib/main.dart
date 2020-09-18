@@ -242,7 +242,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   }
 
   Future<void> getPlacemark() async{
-    List<Placemark> placemarks = await placemarkFromCoordinates(userLocation.latitude, userLocation.longitude);
+    List<Placemark> placemarks = await placemarkFromCoordinates(userLocation.latitude, userLocation.longitude, localeIdentifier: 'ja');
     if(placemarks != null && placemarks.isNotEmpty){
       userPlacemark = placemarks[0];
       print(userPlacemark);
