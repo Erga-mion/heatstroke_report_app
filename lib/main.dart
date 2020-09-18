@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:geocoding/geocoding.dart';
 
 void main() {
   runApp(MaterialApp(
@@ -62,12 +63,13 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   WeatherFormat weatherFormat;
   AlertFormat alertFormat;
   Position userLocation;
+  Placemark userPlacemark;
   double wbgt;
 
   @override
   void initState(){
     super.initState();
-    getLocation();
+    //getLocation();
 
     loadWeather();
   }
@@ -80,7 +82,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           Align(
             alignment: Alignment.topLeft,
             child: FlatButton(
-            child: Text('若松区の熱中症危険度',style: TextStyle(fontSize: 35),),
+            child: Text('${userPlacemark.locality}の熱中症危険度',style: TextStyle(fontSize: 35),),
             onPressed: () {
               // Navigate to the Setting screen using a named route.
               Navigator.pushNamed(context, '/area');
@@ -194,11 +196,13 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     setState(() {
       isLoading = true;
     });
-
-    final lat = 33.8914151;
-    final lon = 130.707071;
-    //final lat = userLocation.latitude;
-    //final lon = userLocation.longitude;
+    await getLocation();
+    await getPlacemark();
+    //final lat = 33.8914151;
+    //final lon = 130.707071;
+    final lat = userLocation.latitude;
+    final lon = userLocation.longitude;
+    // Warning!! Remove APPID before 'git add' !!!
     final weatherResponse = await http.get(
       'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
     );
@@ -228,13 +232,21 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   Future<void> getLocation() async {
     Position currentLocation;
     try {
-      currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+      currentLocation = await getCurrentPosition(desiredAccuracy: LocationAccuracy.medium);
     }
     catch(e){
-      currentLocation = null;
+      currentLocation = null;      
     }
     userLocation = currentLocation;
     print(userLocation);
+  }
+
+  Future<void> getPlacemark() async{
+    List<Placemark> placemarks = await placemarkFromCoordinates(userLocation.latitude, userLocation.longitude);
+    if(placemarks != null && placemarks.isNotEmpty){
+      userPlacemark = placemarks[0];
+      print(userPlacemark);
+    }
   }
 }
 
