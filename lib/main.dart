@@ -80,7 +80,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     
     loadWeather();
-    //Timer.periodic(Duration(minutes: 29), loadWeather());
+    Timer.periodic(Duration(minutes: 1), (timer) {loadWeather();});
   }
 
   Future _showNotification() async {
@@ -182,7 +182,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
               //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 RaisedButton(
-                  child: Text('更新',style: TextStyle(fontSize: 50, color: Colors.white),),
+                  child: Text('更新(開始)',style: TextStyle(fontSize: 30, color: Colors.white),),
                   color: Colors.red,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
@@ -193,14 +193,14 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
                 ),
 
                 /*RaisedButton(
-                  child: Text('通知更新',style: TextStyle(fontSize: 30, color: Colors.white),),
+                  child: Text('自動更新停止',style: TextStyle(fontSize: 30, color: Colors.white),),
                   color: Colors.green,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(10.0),
                   ),                  
                   onPressed: () {
                     setState(() {
-                      _setSchedular();
+                      _timer.cancel();
                     });                    
                   },
                 ),*/
