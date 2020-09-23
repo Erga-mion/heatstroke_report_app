@@ -2,8 +2,8 @@
 
 class WeatherFormat{
   final DateTime date;
-  final int humidity;
-  final double temp;
+  final humidity;
+  final temp;
 
   WeatherFormat({this.date, this.humidity, this.temp});
 
