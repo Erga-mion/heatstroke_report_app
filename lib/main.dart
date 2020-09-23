@@ -8,8 +8,11 @@ import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+Future main() async {
+  await DotEnv().load('assets/.env');
+
   runApp(MaterialApp(
     title: 'Heatstroke report app',
     theme: new ThemeData(
@@ -225,7 +228,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     final lon = userLocation.longitude;
     // Warning!! Remove APPID before 'git add' !!!
     final weatherResponse = await http.get(
-      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID='
+      'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=${DotEnv().env['API_KEY']}'
     );
 
     if(weatherResponse.statusCode == 200){
