@@ -83,7 +83,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     
     loadWeather();
-    Timer.periodic(Duration(minutes: 1), (timer) {loadWeather();});
+    Timer.periodic(Duration(minutes: 3), (timer) {loadWeather();});
   }
 
   Future _showNotification() async {
@@ -100,47 +100,41 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   
   @override
   Widget build(BuildContext context) {
+    final deviceHeight = MediaQuery.of(context).size.height;
+    final deviceWidth = MediaQuery.of(context).size.width;
+    final deviceRate = MediaQuery.of(context).size.aspectRatio;
+    final TextStyle customStyle = TextStyle(fontSize: deviceHeight * deviceRate * 0.09);
     return Container(
       child: Column(
         children: [
-          Align(
-            alignment: Alignment.topLeft,
-            child: FlatButton(
-            child: Text('更新:${DateFormat.Md().format(weatherFormat.date)} ${new DateFormat.Hm().format(weatherFormat.date)}\n現在地:${userPlacemark.locality}',style: TextStyle(fontSize: 35),),
-            onPressed: () {
-              // Navigate to the Setting screen using a named route.
-              Navigator.pushNamed(context, '/area');
-            },
+
+          Container(
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black, width:2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Text('最終更新:${DateFormat.Md().format(weatherFormat.date)} ${new DateFormat.Hm().format(weatherFormat.date)}', style: customStyle,),
+                Text('${userPlacemark.locality}', style: customStyle,)
+              ],
             )
           ),
-          
-          /*Align(
-            alignment: Alignment.topLeft,
-            child: FlatButton(
-            child: Text('${new DateFormat.Hm().format(weatherFormat.date)}    現在',style: TextStyle(fontSize: 40),),
-            onPressed: (){
-              loadWeather();
-            }
-            )
-          ),*/
-
 
           Container(
             padding: const EdgeInsets.all(20),
-            //alignment: Alignment.bottomCenter,
-            //color: Colors.orange[50],
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
-                Image.asset('images/${alertFormat.image}', fit: BoxFit.contain),
-                Text('${alertFormat.comment}',textAlign: TextAlign.left,style: TextStyle(fontSize: 35),),
-                Text('温度 ${weatherFormat.temp.toString()}℃ 湿度 ${weatherFormat.humidity.toString()}%',style: TextStyle(fontSize: 30),),
+                Image.asset('images/${alertFormat.image}', scale: 1),
+                Text('${alertFormat.comment}',textAlign: TextAlign.left, style: TextStyle(fontSize: deviceHeight*deviceRate * 0.1), textScaleFactor: 1,),
+                //Text('温度 ${weatherFormat.temp.toString()}℃ 湿度 ${weatherFormat.humidity.toString()}%', style: TextStyle(fontSize: deviceHeight * 0.05), textScaleFactor: 1,),
               ],
             )
           ),
         
-          Container(
+          /*Container(
             padding: const EdgeInsets.all(8),
             //alignment: Alignment.bottomCenter,
             //color: Colors.orange[50],
@@ -174,39 +168,28 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
 
               ],
             )
-          ),
+          ),*/
 
           Container(
-            padding: const EdgeInsets.all(20),
-            //alignment: Alignment.bottomCenter,
-            //color: Colors.orange[50],
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.blue, width:2),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            padding: const EdgeInsets.all(1),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              //crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 RaisedButton(
-                  child: Text('更新(開始)',style: TextStyle(fontSize: 30, color: Colors.white),),
+                  child: Text('更新',textScaleFactor: 1, style: TextStyle(color: Colors.white, fontSize: deviceHeight*deviceRate * 0.15),),
                   color: Colors.red,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
+                    borderRadius: BorderRadius.circular(5.0),
                   ),                  
                   onPressed: () {
                     loadWeather();
                   },
                 ),
 
-                /*RaisedButton(
-                  child: Text('自動更新停止',style: TextStyle(fontSize: 30, color: Colors.white),),
-                  color: Colors.green,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0),
-                  ),                  
-                  onPressed: () {
-                    setState(() {
-                      _timer.cancel();
-                    });                    
-                  },
-                ),*/
               ],
             )
           ),
@@ -226,7 +209,6 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     //final lon = 130.707071;
     final lat = userLocation.latitude;
     final lon = userLocation.longitude;
-    // Warning!! Remove APPID before 'git add' !!!
     final weatherResponse = await http.get(
       'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=${DotEnv().env['API_KEY']}'
     );
@@ -235,7 +217,9 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
       return setState(() {
         weatherFormat = new WeatherFormat.fromJson(jsonDecode(weatherResponse.body));
         outdoorWbgt();
+        if(alertFormat.level >= 3){
         _showNotification();
+        }
         isLoading = false;
       });
     }
