@@ -2,7 +2,9 @@
 
 Flutter Heatstroke report app project.
 
-使用には,147行目のリンクの`APPID=`の先に,OpenWeatherMapのAPI Key(要登録)が必要です.
+使用には,OpenWeatherMapのAPI Key(要登録)が必要です.
+
+プロジェクトルートディレクトリにassetsディレクトリを作成し,その中に`.env`ファイルを作成し,`API_KEY=(your API Key)`を入力することで,使用できるようになります.
 
 ## Getting Started
 

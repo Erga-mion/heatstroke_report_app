@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 
 class AlertFormat{
-  int _level;
+  int level;
   String comment;
   String image;
 
   AlertFormat(int level,){
-    this._level = level;
+    this.level = level;
 
-    switch (this._level) {
+    switch (this.level) {
       case 5:
-        this.comment = '5 運動は原則中止';
+        this.comment = '運動は原則中止';
         this.image = 'number_5.png';
         break;
       case 4:
