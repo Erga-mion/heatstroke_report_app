@@ -70,6 +70,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   AlertFormat alertFormat;
   Position userLocation;
   Placemark userPlacemark;
+  http.Response userApiResponse;
   double wbgt;
 
   @override
@@ -82,8 +83,10 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     
-    loadWeather();
-    Timer.periodic(Duration(minutes: 3), (timer) {loadWeather();});
+    Timer.periodic(Duration(minutes: 15), (timer){
+      loadWeather();
+      }
+    );
   }
 
   Future _showNotification() async {
@@ -104,36 +107,82 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     final deviceWidth = MediaQuery.of(context).size.width;
     final deviceRate = MediaQuery.of(context).size.aspectRatio;
     final TextStyle customStyle = TextStyle(fontSize: deviceHeight * deviceRate * 0.09);
-    return Container(
-      child: Column(
-        children: [
-
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.black, width:2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.all(10),
+    return FutureBuilder(
+	    future: loadWeather(),
+	    builder: (context,snapshot){
+		    if(snapshot.hasError){
+			    return Text('エラーが発生しました', 
+          textScaleFactor: 1, 
+          style: TextStyle(color: Colors.red, fontSize: deviceHeight*deviceRate * 0.1),
+          );//エラー発生
+		    }
+		    if(snapshot.hasData){
+          print("has Data");
+          return Container(
             child: Column(
               children: [
-                Text('最終更新:${DateFormat.Md().format(weatherFormat.date)} ${new DateFormat.Hm().format(weatherFormat.date)}', style: customStyle,),
-                Text('${userPlacemark.locality}', style: customStyle,)
-              ],
-            )
-          ),
 
-          Container(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Image.asset('images/${alertFormat.image}', scale: 1),
-                Text('${alertFormat.comment}',textAlign: TextAlign.left, style: TextStyle(fontSize: deviceHeight*deviceRate * 0.1), textScaleFactor: 1,),
-                //Text('温度 ${weatherFormat.temp.toString()}℃ 湿度 ${weatherFormat.humidity.toString()}%', style: TextStyle(fontSize: deviceHeight * 0.05), textScaleFactor: 1,),
-              ],
-            )
-          ),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.black, width:2),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(10),
+                  child: Column(
+                    children: [
+                      Text('最終更新:${DateFormat.Md().format(weatherFormat.date)} ${new DateFormat.Hm().format(weatherFormat.date)}', style: customStyle,),
+                      Text('${userPlacemark.locality}', style: customStyle,)
+                    ],
+                  )
+                ),
+
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Image.asset('images/${alertFormat.image}', scale: 1),
+                      Text('${alertFormat.comment}',textAlign: TextAlign.left, style: TextStyle(fontSize: deviceHeight*deviceRate * 0.1), textScaleFactor: 1,),
+                      //Text('温度 ${weatherFormat.temp.toString()}℃ 湿度 ${weatherFormat.humidity.toString()}%', style: TextStyle(fontSize: deviceHeight * 0.05), textScaleFactor: 1,),
+                    ],
+                  )
+                ),
+
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey, width:4),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.all(1),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      RaisedButton(
+                        child: Text('更新',textScaleFactor: 1, style: TextStyle(color: Colors.white, fontSize: deviceHeight*deviceRate * 0.15),),
+                        color: Colors.red,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(5.0),
+                        ),                  
+                        onPressed: (){
+                          loadWeather();
+                          setState(() {});
+                        },
+                      ),
+
+                    ],
+                  )
+                ),
         
+              ],
+            ),      
+          );			    
+		    }
+		    else{
+			    return Center(child:Text('ロード中です！しばらくお待ちください！！', textScaleFactor: 1, style: TextStyle(color: Colors.red, fontSize: deviceHeight*deviceRate * 0.1),));//データ取得ができていない
+		    }
+	    }
+    ); 
+
           /*Container(
             padding: const EdgeInsets.all(8),
             //alignment: Alignment.bottomCenter,
@@ -170,66 +219,37 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
             )
           ),*/
 
-          Container(
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.blue, width:2),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.all(1),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                RaisedButton(
-                  child: Text('更新',textScaleFactor: 1, style: TextStyle(color: Colors.white, fontSize: deviceHeight*deviceRate * 0.15),),
-                  color: Colors.red,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(5.0),
-                  ),                  
-                  onPressed: () {
-                    loadWeather();
-                  },
-                ),
-
-              ],
-            )
-          ),
-        
-        ],
-      ),      
-    );
   }
 
-  loadWeather() async{
-    setState(() {
-      isLoading = true;
-    });
-    await getLocation();
-    await getPlacemark();
-    //final lat = 33.8914151;
-    //final lon = 130.707071;
-    final lat = userLocation.latitude;
-    final lon = userLocation.longitude;
-    final weatherResponse = await http.get(
+  Future<void> getApi() async{
+	await getLocation();
+	await getPlacemark();
+	final lat = userLocation.latitude;
+  final lon = userLocation.longitude;
+
+  final apiResponse = await http.get(
       'https://api.openweathermap.org/data/2.5/onecall?lat=${lat.toString()}&lon=${lon.toString()}&exclude=minutely,hourly,daily&units=metric&APPID=${DotEnv().env['API_KEY']}'
     );
+    userApiResponse = apiResponse;
+  }
 
-    if(weatherResponse.statusCode == 200){
-      return setState(() {
+  Future<int> loadWeather() async{
+	  await getApi();
+	  final weatherResponse = userApiResponse;
+	  if(weatherResponse.statusCode == 200){
         weatherFormat = new WeatherFormat.fromJson(jsonDecode(weatherResponse.body));
         outdoorWbgt();
         if(alertFormat.level >= 3){
         _showNotification();
         }
         isLoading = false;
-      });
+      print("Finish loadWeather!");
     }
 
-    setState(() {
-      isLoading = false;
-    });
+    return 0;
   }
 
-  outdoorWbgt(){
+  void outdoorWbgt(){
     wbgt = 0.735 * weatherFormat.temp + 0.0374 * weatherFormat.humidity + 0.00292 * weatherFormat.temp * weatherFormat.humidity - 4.064;
     if(wbgt>=31){alertFormat = new AlertFormat(5);}
     else if(wbgt >= 28 && wbgt < 31){alertFormat = new AlertFormat(4);}
@@ -247,14 +267,12 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
       currentLocation = null;      
     }
     userLocation = currentLocation;
-    print(userLocation);
   }
 
   Future<void> getPlacemark() async{
     List<Placemark> placemarks = await placemarkFromCoordinates(userLocation.latitude, userLocation.longitude, localeIdentifier: 'ja');
     if(placemarks != null && placemarks.isNotEmpty){
       userPlacemark = placemarks[0];
-      print(userPlacemark);
     }
   }
 }
