@@ -4,6 +4,7 @@ import 'package:heatstroke_report_app/alert_format.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'dart:async';
+import 'dart:io';
 import 'package:intl/intl.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
@@ -66,10 +67,12 @@ class HeatstrokeInfo extends StatefulWidget {
 class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
   bool isLoading = false;
+  bool isIOS = Platform.isIOS;
+  bool isAndroid = Platform.isAndroid;
   WeatherFormat weatherFormat;
   AlertFormat alertFormat;
   Position userLocation;
-  Placemark userPlacemark;
+  String userPlacemark;
   http.Response userApiResponse;
   double wbgt;
 
@@ -83,8 +86,9 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     flutterLocalNotificationsPlugin = new FlutterLocalNotificationsPlugin();
     flutterLocalNotificationsPlugin.initialize(initializationSettings);
     
-    Timer.periodic(Duration(minutes: 15), (timer){
+    Timer.periodic(Duration(minutes: 1), (timer){
       loadWeather();
+      setState(() {});
       }
     );
   }
@@ -116,8 +120,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           style: TextStyle(color: Colors.red, fontSize: deviceHeight*deviceRate * 0.1),
           );//エラー発生
 		    }
-		    if(snapshot.hasData){
-          print("has Data");
+		    if(snapshot.connectionState == ConnectionState.done){
           return Container(
             child: Column(
               children: [
@@ -131,7 +134,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
                   child: Column(
                     children: [
                       Text('最終更新:${DateFormat.Md().format(weatherFormat.date)} ${new DateFormat.Hm().format(weatherFormat.date)}', style: customStyle,),
-                      Text('${userPlacemark.locality}', style: customStyle,)
+                      Text('$userPlacemark', style: customStyle,)
                     ],
                   )
                 ),
@@ -178,8 +181,20 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
           );			    
 		    }
 		    else{
-			    return Center(child:Text('ロード中です！しばらくお待ちください！！', textScaleFactor: 1, style: TextStyle(color: Colors.red, fontSize: deviceHeight*deviceRate * 0.1),));//データ取得ができていない
-		    }
+          return Container(
+            padding: const EdgeInsets.all(50),
+          child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            CircularProgressIndicator(),
+            Text('ロード中です！しばらくお待ちください！！', 
+            textScaleFactor: 1, 
+            style: TextStyle(color: Colors.red, fontSize: deviceHeight*deviceRate * 0.1),
+            )
+          ],
+          ),
+          );
+        }
 	    }
     ); 
 
@@ -233,7 +248,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
     userApiResponse = apiResponse;
   }
 
-  Future<int> loadWeather() async{
+  Future<void> loadWeather() async{
 	  await getApi();
 	  final weatherResponse = userApiResponse;
 	  if(weatherResponse.statusCode == 200){
@@ -243,10 +258,7 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
         _showNotification();
         }
         isLoading = false;
-      print("Finish loadWeather!");
     }
-
-    return 0;
   }
 
   void outdoorWbgt(){
@@ -272,7 +284,12 @@ class _HeatstrokeInfoState extends State<HeatstrokeInfo> {
   Future<void> getPlacemark() async{
     List<Placemark> placemarks = await placemarkFromCoordinates(userLocation.latitude, userLocation.longitude, localeIdentifier: 'ja');
     if(placemarks != null && placemarks.isNotEmpty){
-      userPlacemark = placemarks[0];
+      if(isIOS){
+        userPlacemark = placemarks[0].locality;
+      }
+      else if(isAndroid){
+        userPlacemark = placemarks[0].subAdministrativeArea;
+      }
     }
   }
 }
